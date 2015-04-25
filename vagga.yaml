@@ -1,0 +1,27 @@
+containers:
+
+  build:
+    setup:
+    - !Ubuntu trusty
+    - !UbuntuUniverse
+    - !Install [python3-pip, python3-dev, libxml2-dev,
+                python3-lxml, libxslt-dev,
+                libz-dev]
+    - !PipConfig {dependencies: true}
+    - !Env
+      CFLAGS: "-I/usr/include/libxml2"
+    - !Py3Install [hovercraft]
+    - !Install [webfs]
+
+
+commands:
+
+  make: !Command
+    container: build
+    run: |
+      hovercraft presentation.rst build
+      cp hovercraft.css build/hovercraft.css
+
+  serve: !Command
+    container: build
+    run: webfsd -R /work/build -F
