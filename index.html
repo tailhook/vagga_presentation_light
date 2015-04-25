@@ -1,0 +1,47 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>vagga</title><meta name="generator" content="Hovercraft! 1.0 http://regebro.github.com/hovercraft"></meta><link rel="stylesheet" href="css/hovercraft.css" media="all"></link><link rel="stylesheet" href="css/impressConsole.css" media="all"></link><link rel="stylesheet" href="css/highlight.css" media="all"></link><link rel="stylesheet" href="my.css" media="screen,projection"></link></head><body class="impress-not-supported"><div id="impress"><div class="step" step="0" id="title" data-x="0" data-y="0"><h1 id="vagga">Vagga</h1></div><div class="step" step="1" data-x="1600" data-y="0"><h1 id="id1">Vagga</h1><ul><li>simple YAML config (+versioning)</li><li>user namespaces (no root/setuid)</li><li>multiple process monitoring</li><li>only for dev.env.</li></ul></div><div class="step" step="2" data-x="3200" data-y="0"><pre class="highlight code yaml"><span class="c1"># vagga.yaml</span>
+<span class="l-Scalar-Plain">containers</span><span class="p-Indicator">:</span>
+  <span class="s">"react"</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">setup</span><span class="p-Indicator">:</span>
+    <span class="p-Indicator">-</span> <span class="kt">!NpmInstall</span> <span class="p-Indicator">[</span><span class="nv">react-tools</span><span class="p-Indicator">]</span>
+<span class="l-Scalar-Plain">commands</span><span class="p-Indicator">:</span>
+  <span class="s">"build"</span><span class="p-Indicator">:</span> <span class="kt">!Command</span>
+    <span class="l-Scalar-Plain">container</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">react</span>
+    <span class="l-Scalar-Plain">description</span><span class="p-Indicator">:</span> <span class="s">"Build</span><span class="nv"> </span><span class="s">static</span><span class="nv"> </span><span class="s">files"</span>
+    <span class="l-Scalar-Plain">run</span><span class="p-Indicator">:</span> <span class="s">"jsx</span><span class="nv"> </span><span class="s">jsx/page.jsx</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">public/js/page.js"</span></pre></div><div class="step" step="3" data-x="4800" data-y="0"><pre class="highlight code console"><span class="gp">$</span> git clone git://github.com/.../foobar
+<span class="gp">$</span> <span class="nb">cd </span>foobar
+<span class="gp">$</span> vagga
+<span class="go">Available commands:
+    build       Build static files
+    run         Run nginx+app+redis
+    build-docs  Build docs
+</span><span class="gp">$</span> vagga build</pre></div><div class="step" step="4" data-x="6400" data-y="0"><pre class="highlight code console"><span class="gp">$</span> git pull
+<span class="gp">$</span> vagga run</pre></div><div class="step" step="5" data-x="8000" data-y="0"><pre class="highlight "># docker tree
+-+= 00001 root systemd --system
+ |-+- 10771 root docker -d
+ | \--= 32029 root bash   &lt;&lt; our process
+ \-+= 30029 pc tmux
+   \-+= 10718 pc -zsh     &lt;&lt; our shell
+     \--= 32021 pc docker run -it --rm bash</pre><pre class="highlight "># vagga tree
+-+= 00001 root systemd --system
+ \-+= 30029 pc tmux
+   \-+= 10358 pc -zsh        &lt;&lt; our shell
+     \-+= 00940 pc vagga bash
+       \-+- 00941 pc vagga bash
+         \--= 00942 pc bash  &lt;&lt; our process</pre></div><div class="step" step="6" data-x="9600" data-y="0"><pre class="highlight code yaml"><span class="c1"># vagga.yaml</span>
+<span class="l-Scalar-Plain">containers</span><span class="p-Indicator">:</span>
+  <span class="s">"py"</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">setup</span><span class="p-Indicator">:</span>
+    <span class="p-Indicator">-</span> <span class="kt">!Ubuntu</span> <span class="l-Scalar-Plain">trusty</span>
+    <span class="p-Indicator">-</span> <span class="kt">!BuildDeps</span> <span class="p-Indicator">[</span><span class="nv">base-devel</span><span class="p-Indicator">,</span> <span class="nv">cython</span><span class="p-Indicator">]</span>
+    <span class="p-Indicator">-</span> <span class="kt">!PipConfig</span> <span class="p-Indicator">{</span> <span class="nv">dependencies</span><span class="p-Indicator">:</span> <span class="nv">true</span> <span class="p-Indicator">}</span>
+    <span class="p-Indicator">-</span> <span class="kt">!Py3Requirements</span> <span class="l-Scalar-Plain">requirements.txt</span></pre></div><div class="step" step="7" data-x="11200" data-y="0"><pre class="highlight code yaml"><span class="l-Scalar-Plain">run</span><span class="p-Indicator">:</span> <span class="kt">!Supervise</span>
+  <span class="l-Scalar-Plain">description</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Run full server stack</span>
+  <span class="l-Scalar-Plain">children</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">redis</span><span class="p-Indicator">:</span> <span class="kt">!Command</span>
+      <span class="l-Scalar-Plain">container</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">redis</span>
+      <span class="l-Scalar-Plain">run</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">redis-server</span><span class="p-Indicator">,</span> <span class="nv">--daemonize</span><span class="p-Indicator">,</span> <span class="nv">no</span><span class="p-Indicator">]</span>
+    <span class="l-Scalar-Plain">nginx</span><span class="p-Indicator">:</span> <span class="kt">!Command</span>
+      <span class="l-Scalar-Plain">container</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">nginx</span>
+      <span class="l-Scalar-Plain">run</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">nginx</span><span class="p-Indicator">,</span> <span class="nv">-c</span><span class="p-Indicator">,</span> <span class="nv">/work/config/nginx.conf</span><span class="p-Indicator">]</span>
+    <span class="l-Scalar-Plain">foobar</span><span class="p-Indicator">:</span> <span class="kt">!Command</span>
+      <span class="l-Scalar-Plain">run</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">python</span><span class="p-Indicator">,</span> <span class="nv">-m</span><span class="p-Indicator">,</span> <span class="nv">foobar</span><span class="p-Indicator">]</span></pre></div><div class="step" step="8" data-x="12800" data-y="0"><h1 id="vagga-todo">Vagga TODO</h1><ul><li>pip-accel (cache binary packages)</li><li>flake8 (i.e. project-specific style checks)</li></ul></div><div class="step" step="9" data-x="14400" data-y="0"><img src="vagga.svg" alt="" width="500" height=""></img><ul><li><a href="http://github.com/tailhook/vagga">http://github.com/tailhook/vagga</a></li><li><a href="http://vagga.readthedocs.org">http://vagga.readthedocs.org</a></li></ul></div></div><div id="hovercraft-help"><table><tr><th>Space</th><td>Forward</td></tr><tr><th>Left, Down, Page Down</th><td>Next slide</td></tr><tr><th>Right, Up, Page Up</th><td>Previous slide</td></tr><tr><th>P</th><td>Open presenter console</td></tr><tr><th>H</th><td>Toggle this help</td></tr></table></div><script type="text/javascript" src="js/impress.js"></script><script type="text/javascript" src="js/impressConsole.js"></script><script type="text/javascript" src="js/hovercraft.js"></script></body></html>
