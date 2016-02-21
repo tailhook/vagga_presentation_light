@@ -43,7 +43,7 @@ Vagga
       "build": !Command
         container: "webpack"
         description: "Build static files"
-        run: "webpack --progress --color --colors"
+        run: "webpack --progress --colors"
 
 ----
 
