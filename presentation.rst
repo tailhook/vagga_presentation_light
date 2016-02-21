@@ -19,6 +19,12 @@ Vagga -- Virtualenv on Steroids
 
 ----
 
+=========================================
+Vagga -- The Higher Level Package Manager
+=========================================
+
+----
+
 Vagga
 =====
 
