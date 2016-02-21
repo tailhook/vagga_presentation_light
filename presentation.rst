@@ -13,6 +13,12 @@ Vagga
 
 ----
 
+===============================
+Vagga -- Virtualenv on Steroids
+===============================
+
+----
+
 Vagga
 =====
 
@@ -21,20 +27,23 @@ Vagga
 * multiple process monitoring
 * only for dev.env.
 
+(written in rust)
+
 ----
 
 .. code-block:: yaml
 
     # vagga.yaml
     containers:
-      "react":
+      "webpack":
         setup:
-        - !NpmInstall [react-tools]
+        - !NpmInstall [webpack]
+        - !NpmDependencies "package.json"
     commands:
       "build": !Command
-        container: react
+        container: "webpack"
         description: "Build static files"
-        run: "jsx jsx/page.jsx > public/js/page.js"
+        run: "webpack --progress --color --colors"
 
 ----
 
@@ -89,7 +98,7 @@ Vagga
         - !Ubuntu trusty
         - !BuildDeps [base-devel, cython]
         - !PipConfig { dependencies: true }
-        - !Py3Requirements requirements.txt
+        - !Py3Requirements "requirements.txt"
 
 
 ----
@@ -114,8 +123,8 @@ Vagga
 Vagga TODO
 ==========
 
-* pip-accel (cache binary packages)
-* flake8 (i.e. project-specific style checks)
+* Image Pull/Push
+* Testing distributed systems
 
 ----
 
