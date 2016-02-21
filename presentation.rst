@@ -120,11 +120,21 @@ Vagga
 
 ----
 
+Conventions
+===========
+
+* vagga run
+* vagga test
+* vagga doc
+
+----
+
 Vagga TODO
 ==========
 
 * Image Pull/Push
 * Testing distributed systems
+* Better CI integration
 
 ----
 
